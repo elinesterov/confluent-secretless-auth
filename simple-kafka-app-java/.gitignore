@@ -15,6 +15,9 @@ build
 # Ignore Visual Studio Code project-specific settings directory
 .vscode
 
+# Ignore IntelliJ IDEA
+.idea
+
 # Ignore Vim project-specific settings directory
 .vim
 
