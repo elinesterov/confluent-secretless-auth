@@ -1,2 +1,5 @@
 # Ignore macOS project-specific settings directory
 .DS_Store
+
+# Ignore configuration directory
+.config
