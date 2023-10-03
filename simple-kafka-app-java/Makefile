@@ -10,4 +10,4 @@ clean:
 	mvn clean
 
 docker:
-	docker build -t my-application .
+	docker build -t kafka-client-java .

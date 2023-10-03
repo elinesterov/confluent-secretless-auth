@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-config
+data:
+  config.properties: |
+    bootstrap.servers=pkc-rgm37.us-west-2.aws.confluent.cloud:9092
+    security.protocol=SASL_SSL
+    sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username='USERNAME' password='PASSWORD';
+    sasl.mechanism=PLAIN
+    client.dns.lookup=use_all_dns_ips
+    acks=all
+    key.serializer=org.apache.kafka.common.serialization.StringSerializer
+    value.serializer=org.apache.kafka.common.serialization.StringSerializer
+    key.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+    value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kafka-secret
+type: Opaque
+data:
+  username: bm90LWEtcmVhbC11c2VyLW5hbWU=
+  password: bm90LWEtcmVhbC11c2VyLXBhc3N3b3JkLXdoby13b3VsZC1wdXQtaXQtaGVyZT8/Pw==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-producer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-producer
+  template:
+    metadata:
+      labels:
+        app: kafka-producer
+    spec:
+      initContainers:
+      - name: init-config
+        image: busybox
+        command: ['sh', '-c']
+        args:
+        - >
+          cp /config-original/config.properties /config/config.properties;
+          sed -i "s|username='USERNAME'|username='${KAFKA_USERNAME}'|g" /config/config.properties;
+          sed -i "s|password='PASSWORD'|password='${KAFKA_PASSWORD}'|g" /config/config.properties;
+        env:
+        - name: KAFKA_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: kafka-secret
+              key: username
+        - name: KAFKA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kafka-secret
+              key: password
+        volumeMounts:
+        - name: config-original
+          mountPath: /config-original
+        - name: config-volume
+          mountPath: /config
+      containers:
+      - name: kafka-producer-container
+        image: simple-kafka-app
+        args: ["producer", "/config/config.properties", "test-topic"]
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+      volumes:
+      - name: config-original
+        configMap:
+          name: kafka-config
+      - name: config-volume
+        emptyDir: {}
+
