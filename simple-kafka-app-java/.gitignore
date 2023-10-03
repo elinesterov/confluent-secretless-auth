@@ -1,0 +1,25 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+**/target/
+
+# Ignore Maven dependency directory
+.m2
+
+# Ignore Eclipse project-specific settings directory
+.settings
+
+# Ignore Visual Studio Code project-specific settings directory
+.vscode
+
+# Ignore Vim project-specific settings directory
+.vim
+
+# Ignore macOS project-specific settings directory
+.DS_Store
+
+# Ignore configuration directory
+.config
