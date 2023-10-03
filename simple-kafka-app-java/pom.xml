@@ -10,7 +10,7 @@
       <version>7.4.0</version>
     </parent>
 
-    <artifactId>clients-example</artifactId>
+    <artifactId>client</artifactId>
     <packaging>jar</packaging>
     <version>7.4.0</version>
 

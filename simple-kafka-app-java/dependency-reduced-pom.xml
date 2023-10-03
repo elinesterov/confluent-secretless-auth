@@ -7,7 +7,7 @@
     <relativePath>../pom.xml/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>clients-example</artifactId>
+  <artifactId>client</artifactId>
   <version>7.4.0</version>
   <description>Kafka Java clients examples for CCloud.</description>
   <url>http://confluent.io</url>
