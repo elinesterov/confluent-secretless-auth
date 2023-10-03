@@ -3,3 +3,6 @@
 
 # Ignore configuration directory
 .config
+
+# direnv + nix cache
+/.direnv/
