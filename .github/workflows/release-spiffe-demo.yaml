@@ -24,4 +24,9 @@ jobs:
         run: echo "SHORT_TAG=${GITHUB_REF#refs/tags/spiffe-proxy-}" >> $GITHUB_ENV
       - run: |
           cd spiffe-proxy
-          ko build . --base-import-paths --tags ${{ env.SHORT_TAG }} --tag-only --platform linux/arm64,linux/amd64
+          KO_DOCKER_REPO=ghcr.io/elinesterov/spiffe-proxy \
+          ko build . \
+            --bare \
+            --tags ${{ env.SHORT_TAG }} \
+            --tag-only \
+            --platform linux/arm64,linux/amd64
