@@ -15,6 +15,9 @@ data:
     value.serializer=org.apache.kafka.common.serialization.StringSerializer
     key.deserializer=org.apache.kafka.common.serialization.StringDeserializer
     value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+  # TODO: bootstrap.servers should be replaced with your Kafka bootstrap server
+  # TODO: extension_logicalCluster should be replaced with your Kafka cluster ID
+  # TODO: extension_identityPoolId should be replaced with your Confluent Identity Pool ID
   keyless.config.properties: |
     bootstrap.servers=pkc-rgm37.us-west-2.aws.confluent.cloud:9092
     security.protocol=SASL_SSL
@@ -26,7 +29,7 @@ data:
         clientId='<client-id>' \
         clientSecret='<client-secret>' \
         extension_logicalCluster='lkc-pkwjyk' \
-        extension_identityPoolId='pool-amyV';
+        extension_identityPoolId='pool-WxOp';
     acks=all
     key.serializer=org.apache.kafka.common.serialization.StringSerializer
     value.serializer=org.apache.kafka.common.serialization.StringSerializer
@@ -55,6 +58,7 @@ spec:
     metadata:
       labels:
         app: kafka-producer
+        k8s.spirl.com/spiffe-csi: enabled
     spec:
       initContainers:
       - name: init-config
@@ -88,6 +92,12 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /config
+      # - name: spiffe-proxy
+      #   image: spiffe-proxy
+      #   args: ["serve"]
+      #   env:
+      #   - name: PORT
+      #     value: "8080"
       volumes:
       - name: config-original
         configMap:
@@ -108,6 +118,7 @@ spec:
     metadata:
       labels:
         app: kafka-consumer
+        k8s.spirl.com/spiffe-csi: enabled
     spec:
       initContainers:
       - name: init-config
@@ -141,6 +152,12 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /config
+      # - name: spiffe-proxy
+      #   image: spiffe-proxy
+      #   args: ["serve"]
+      #   env:
+      #   - name: PORT
+      #     value: "8080"
       volumes:
       - name: config-original
         configMap:
