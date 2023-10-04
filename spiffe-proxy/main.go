@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -104,12 +105,19 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			logger.Info("Starting server", zap.Int("port", cfg.Port), zap.String("spiffe_endpoint_socket", cfg.SpiffeEndpointSocket))
 
-			if _, err := os.Stat(cfg.SpiffeEndpointSocket); os.IsNotExist(err) {
-				logger.Fatal("SPIFFE Workload API socket does not exist", zap.String("path", cfg.SpiffeEndpointSocket))
+			var socketFilePath string
+			if strings.HasPrefix(cfg.SpiffeEndpointSocket, "unix://") {
+				socketFilePath = strings.TrimPrefix(cfg.SpiffeEndpointSocket, "unix://")
+			} else {
+				socketFilePath = cfg.SpiffeEndpointSocket
+			}
+
+			if _, err := os.Stat(socketFilePath); os.IsNotExist(err) {
+				logger.Fatal("SPIFFE Workload API socket does not exist", zap.String("path", socketFilePath))
 			}
 
 			// Initialize the Workload API client
-			client, err := workloadapi.New(context.Background(), workloadapi.WithAddr("unix://"+cfg.SpiffeEndpointSocket))
+			client, err := workloadapi.New(context.Background(), workloadapi.WithAddr("unix://"+socketFilePath))
 			if err != nil {
 				logger.Fatal("Could not connect to SPIFFE Workload API", zap.Error(err))
 			}
