@@ -5,6 +5,10 @@ on:
     tags:
       - 'spiffe-proxy-v*'
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   publish:
     name: Publish
