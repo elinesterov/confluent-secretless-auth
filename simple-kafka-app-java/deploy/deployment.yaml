@@ -3,12 +3,30 @@ kind: ConfigMap
 metadata:
   name: kafka-config
 data:
+  # TODO: bootstrap.servers should be replaced with your Kafka bootstrap server 
   config.properties: |
     bootstrap.servers=pkc-rgm37.us-west-2.aws.confluent.cloud:9092
     security.protocol=SASL_SSL
     sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username='USERNAME' password='PASSWORD';
     sasl.mechanism=PLAIN
     client.dns.lookup=use_all_dns_ips
+    acks=all
+    key.serializer=org.apache.kafka.common.serialization.StringSerializer
+    value.serializer=org.apache.kafka.common.serialization.StringSerializer
+    key.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+    value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+  keyless.config.properties: |
+    bootstrap.servers=pkc-rgm37.us-west-2.aws.confluent.cloud:9092
+    security.protocol=SASL_SSL
+    sasl.oauthbearer.token.endpoint.url=http://localhost:8080/api/getjwt
+    sasl.login.callback.handler.class=org.apache.kafka.common.security.oauthbearer.secured.OAuthBearerLoginCallbackHandler
+    sasl.mechanism=OAUTHBEARER
+    sasl.jaas.config= \
+      org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
+        clientId='<client-id>' \
+        clientSecret='<client-secret>' \
+        extension_logicalCluster='lkc-pkwjyk' \
+        extension_identityPoolId='pool-amyV';
     acks=all
     key.serializer=org.apache.kafka.common.serialization.StringSerializer
     value.serializer=org.apache.kafka.common.serialization.StringSerializer
@@ -44,7 +62,7 @@ spec:
         command: ['sh', '-c']
         args:
         - >
-          cp /config-original/config.properties /config/config.properties;
+          cp /config-original/*.* /config/;
           sed -i "s|username='USERNAME'|username='${KAFKA_USERNAME}'|g" /config/config.properties;
           sed -i "s|password='PASSWORD'|password='${KAFKA_PASSWORD}'|g" /config/config.properties;
         env:
@@ -66,7 +84,60 @@ spec:
       containers:
       - name: kafka-producer-container
         image: simple-kafka-app
-        args: ["producer", "/config/config.properties", "test-topic"]
+        args: ["producer", "/config/config.properties", "purchases"]
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+      volumes:
+      - name: config-original
+        configMap:
+          name: kafka-config
+      - name: config-volume
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-consumer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-consumer
+    spec:
+      initContainers:
+      - name: init-config
+        image: busybox
+        command: ['sh', '-c']
+        args:
+        - >
+          cp /config-original/*.* /config/;
+          sed -i "s|username='USERNAME'|username='${KAFKA_USERNAME}'|g" /config/config.properties;
+          sed -i "s|password='PASSWORD'|password='${KAFKA_PASSWORD}'|g" /config/config.properties;
+        env:
+        - name: KAFKA_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: kafka-secret
+              key: username
+        - name: KAFKA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kafka-secret
+              key: password
+        volumeMounts:
+        - name: config-original
+          mountPath: /config-original
+        - name: config-volume
+          mountPath: /config
+      containers:
+      - name: kafka-condumer-container
+        image: simple-kafka-app
+        args: ["consumer", "/config/config.properties", "purchases"]
         volumeMounts:
         - name: config-volume
           mountPath: /config

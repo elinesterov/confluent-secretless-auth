@@ -6,3 +6,6 @@
 
 # direnv + nix cache
 /.direnv/
+
+# Ignore Visual Studio Code settings
+.vscode/
