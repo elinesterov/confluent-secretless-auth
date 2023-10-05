@@ -20,6 +20,9 @@ jobs:
       - name: Extract version from tag name
         run: echo "SHORT_TAG=${GITHUB_REF#refs/tags/simple-kafka-app-java-}" >> $GITHUB_ENV
 
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       # Add support for more platforms with QEMU (optional)
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
