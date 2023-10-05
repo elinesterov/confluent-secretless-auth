@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write # since we are usign buildx it needs write permission to be able to push to ghcr.io  
 
 jobs:
   publish:
