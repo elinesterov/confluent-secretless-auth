@@ -1,7 +1,7 @@
 name: Build and Release spiffe-proxy
 
 on:
-  create:
+  push:
     tags:
       - 'spiffe-proxy-v*'
 

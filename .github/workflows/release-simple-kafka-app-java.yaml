@@ -1,7 +1,7 @@
 name: Build and Release Simple Kafka App Java
 
 on:
-  create:
+  push:
     tags:
       - 'simple-kafka-app-java-v*'
 
