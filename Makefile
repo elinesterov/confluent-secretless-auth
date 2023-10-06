@@ -1,4 +1,4 @@
-# env-up: Start the dev demo environment
+# env-up: Start the dev environment
 .PHONY: env-up
 env-up:
 	@echo Launching local k8s clusters
@@ -6,7 +6,7 @@ env-up:
 	@echo Launching demo environment
 	@tilt up --port 10350 --context kind-kafka-test
 
-# env-down: Stop the dev demo environment
+# env-down: Stop the dev environment
 .PHONY: env-down
 env-down:
 	@echo Stopping demo environment
@@ -15,6 +15,6 @@ env-down:
 	@echo Stopping local k8s clusters
 	@ctlptl delete -f cluster.yaml
 
-# env-reset: Reset dev demo environment
+# env-reset: Reset dev environment
 .PHONY: env-reset
 env-reset: env-down env-up
