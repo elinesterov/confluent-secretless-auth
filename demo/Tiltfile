@@ -1,0 +1,5 @@
+
+load('../tilt/ko/Tiltfile', 'ko_build')
+
+k8s_yaml('./producer.yaml')
+k8s_yaml('./consumer.yaml')
