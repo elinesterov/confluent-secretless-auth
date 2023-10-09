@@ -33,8 +33,8 @@ data:
     sasl.mechanism=OAUTHBEARER
     sasl.jaas.config= \
       org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-        clientId='<client-id>' \
-        clientSecret='<client-secret>' \
+        clientId='' \
+        clientSecret='' \
         extension_logicalCluster='lkc-pkwjyk' \
         extension_identityPoolId='pool-8be6';
     acks=all
