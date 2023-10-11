@@ -33,10 +33,10 @@ data:
     sasl.mechanism=OAUTHBEARER
     sasl.jaas.config= \
       org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-        clientId='' \
-        clientSecret='' \
+        clientId='<client-id>' \
+        clientSecret='<client-secret>' \
         extension_logicalCluster='lkc-pkwjyk' \
-        extension_identityPoolId='pool-8be6';
+        extension_identityPoolId='pool-Pe4W';
     acks=all
     key.serializer=org.apache.kafka.common.serialization.StringSerializer
     value.serializer=org.apache.kafka.common.serialization.StringSerializer
@@ -104,16 +104,16 @@ spec:
       containers:
       - name: kafka-condumer-container
         image: ghcr.io/elinesterov/simple-kafka-app-java:v0.1.0
-        args: ["consumer", "/config/keyless.config.properties", "purchases"]
+        args: ["consumer", "/config/config.properties", "purchases"]
         volumeMounts:
         - name: config-volume
           mountPath: /config
-      - name: spiffe-proxy
-        image: ghcr.io/elinesterov/spiffe-proxy:v0.1.0
-        args: ["serve"]
-        env:
-        - name: PORT
-          value: "8080"
+      # - name: spiffe-proxy
+      #   image: ghcr.io/elinesterov/spiffe-proxy:v0.1.0
+      #   args: ["serve"]
+      #   env:
+      #   - name: PORT
+      #     value: "8080"
       volumes:
       - name: config-original
         configMap:
